@@ -1,0 +1,34 @@
+%% cascade '_base.tx'
+
+%% around content -> {
+    <div class="row my-4">
+    <form method="POST" action="[% $c.uri_for( '/create/message') %]">
+        %% include '_forms/input.tx' { type => 'text', name => 'to',
+        %%   title => 'To',
+        %%   help  => 'The user or channel to send the message to.',
+        %%   value => $form_to
+        %% };
+
+        %% include '_forms/input.tx' { type => 'text', name => 'title',
+        %%   title => 'Title',
+        %%   help  => 'Message title',
+        %%   value => $form_title
+        %% };
+        
+        %% include '_forms/input.tx' { type => 'text', name => 'url',
+        %%   title => 'URL',
+        %%   help  => 'URL For Link',
+        %%   value => $form_url
+        %% };
+
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" name="message" id="message" rows="3">[% $form_message %]</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary float-end">Post Message</button>
+    </form>
+    </div>
+    <hr />
+%% }
+

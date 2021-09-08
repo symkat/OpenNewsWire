@@ -1,0 +1,33 @@
+    <div class="card my-4">
+        <div class="card-body">
+            <div class="">
+                <a href="[% $c.uri_for_action( '/userchannel/get_user', [], $comment.message.author.name ) %]">u/[% $comment.author.name %]</a>
+                <small><span title="[% $comment.message.created %]">[% $comment.message.time_ago %]</span></small>
+            </div>
+            <div class="pt-4">
+%%              $comment.message.content
+            </div>
+            <br />
+              <a class="card-link" data-bs-toggle="collapse" href="#replyForm[% $comment.message.id %]" role="button" aria-expanded="false" aria-controls="replyForm[% $comment.message.id %]">[Reply]</a>
+            <a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [], $channel.name, $comment.message.id, 'permlink' ) %]" class="card-link">[Permlink]</a>
+            <div id="replyForm[% $comment.message.id %]" class="row mx-2 my-4 collapse">
+                <form method="POST" action="/create/message">
+                    <input type="hidden" name="reply_to"     value="[% $comment.message.id %]" />
+                    <input type="hidden" name="message_id"   value="[% $message.id %]" />
+                    <input type="hidden" name="message_slug" value="[% $message.title %]" />
+                    <input type="hidden" name="channel_name" value="[% $channel.name %]" />
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Post a Reply</label>
+                        <textarea class="form-control" name="message" id="message" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary float-end">Post Message</button>
+                </form>
+            </div>
+        </div>
+%%      for $comment.children -> $child_comment {  
+        <div style="margin-left: 2em">
+%%              include "topic/_show_topic_message_comment.tx" { comment => $child_comment };
+        </div>
+%%      }
+    </div>

@@ -9,10 +9,10 @@
               Create New Topic
             </a>
           </li>
-%%        if ( $channel ) { 
+%%        if ( $topic ) { 
           <li class="nav-item">
             <a class="nav-link [% $sb_active == "dashboard" ? "active" : "" %]"  aria-current="page" 
-                href="[% $c.uri_for_action( '/create/create_message', [], { channel => $channel.name } ) %]">
+                href="[% $c.uri_for_action( '/create/create_message', [], { topic => $topic.name } ) %]">
               <span data-feather="home"></span>
               Create New Post
             </a>

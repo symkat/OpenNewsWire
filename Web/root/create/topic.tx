@@ -1,0 +1,27 @@
+%% cascade '_base.tx'
+
+%% around content -> {
+    <div class="row my-4">
+        <div class="col">
+%%      if ( $errors ) { 
+            <h5>There were errors with your request:</h5>
+            <ul>
+%%          for $errors -> $error {
+                <li class="text-danger">[% $error %]</li>
+%%          }
+            </ul>
+%%      }
+        </div>
+        <div class="col">
+            <form method="POST" action="[% $c.uri_for_action( '/create/create_topic' ) %]">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">t/</span>
+                  <input type="text" name="topic_name" value="[% $form_topic_name %]" class="form-control" placeholder="topicName" aria-label="Topic name" aria-describedby="basic-addon1">
+                </div>
+
+                <button type="submit" class="btn btn-primary float-end">Make Topic!</button>
+            </form>
+        </div>
+    </div>
+%% }
+
