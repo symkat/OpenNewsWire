@@ -154,5 +154,44 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-08 14:30:18
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RvVaTUvL9AJnqVI5zAYK2Q
 
+sub setting {
+    my ( $self, $setting, $value ) = @_;
+
+    if ( defined $value ) {
+        my $rs = $self->find_or_new_related( 'topic_channel_settings', { name => $setting } );
+        $rs->value( ref $value ? $value : { value => $value } );
+
+        $rs->update if     $rs->in_storage;
+        $rs->insert unless $rs->in_storage;
+
+        return $value;
+    } else {
+        my $result = $self->find_related('topic_channel_settings', { name => $setting });
+        return undef unless $result;
+        return $self->_get_setting_value($result);
+    }
+}
+
+sub _get_setting_value {
+    my ( $self, $setting ) = @_;
+
+    if ( ref $setting->value eq 'HASH' and keys %{$setting->value} == 1 and exists $setting->value->{value} ) {
+        return $setting->value->{value};
+    }
+
+    return $setting->value;
+}
+
+sub get_settings {
+    my ( $self ) = @_;
+
+    my $return = {};
+
+    foreach my $setting ( $self->search_related( 'topic_channel_settings', {} )->all ) {
+        $return->{${\($setting->name)}} = $self->_get_setting_value($setting);
+    }
+
+    return $return;
+}
 
 1;
