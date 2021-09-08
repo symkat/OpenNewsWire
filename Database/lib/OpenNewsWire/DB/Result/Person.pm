@@ -163,12 +163,54 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 person_settings
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-06 15:34:11
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4xVWqi0rjeL+Z+/qvVdSdg
+Type: has_many
+
+Related object: L<OpenNewsWire::DB::Result::PersonSetting>
+
+=cut
+
+__PACKAGE__->has_many(
+  "person_settings",
+  "OpenNewsWire::DB::Result::PersonSetting",
+  { "foreign.person_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 topic_channel_messages
+
+Type: has_many
+
+Related object: L<OpenNewsWire::DB::Result::TopicChannelMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "topic_channel_messages",
+  "OpenNewsWire::DB::Result::TopicChannelMessage",
+  { "foreign.author_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+=head2 topic_channels
+
+Type: has_many
+
+Related object: L<OpenNewsWire::DB::Result::TopicChannel>
+
+=cut
+
+__PACKAGE__->has_many(
+  "topic_channels",
+  "OpenNewsWire::DB::Result::TopicChannel",
+  { "foreign.owner_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-08 14:30:18
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:irY/GBQ/r8VIJXqXiJpL2Q
 
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;
