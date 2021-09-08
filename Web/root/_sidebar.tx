@@ -1,0 +1,22 @@
+    <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <div class="position-sticky pt-3">
+        
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link [% $sb_active == "dashboard" ? "active" : "" %]"  aria-current="page" 
+                href="[% $c.uri_for_action( '/create/create_topic' ) %]">
+              <span data-feather="home"></span>
+              Create New Topic
+            </a>
+          </li>
+%%        if ( $channel ) { 
+          <li class="nav-item">
+            <a class="nav-link [% $sb_active == "dashboard" ? "active" : "" %]"  aria-current="page" 
+                href="[% $c.uri_for_action( '/create/create_message', [], { channel => $channel.name } ) %]">
+              <span data-feather="home"></span>
+              Create New Post
+            </a>
+          </li>
+%%       } 
+      </div>
+    </nav>
