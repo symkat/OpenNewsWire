@@ -123,64 +123,6 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-06 15:34:11
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jJhSs+iC+Gm2BOUJAosMXg
 
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-__PACKAGE__->set_primary_key('person_id');
-
-use Crypt::Eksblowfish::Bcrypt qw( bcrypt_hash en_base64 de_base64 );
-use Crypt::Random;
-
-sub check_password {
-    my ( $self, $password ) = @_;
-    return de_base64($self->password) eq bcrypt_hash({
-            key_nul => 1,
-            cost => 8,
-            salt => de_base64($self->salt),
-    }, $password );
-}
-
-sub set_password {
-    my ( $self, $password ) = @_;
-    $self->_fill_password( $password );
-    $self->insert;
-    return $self;
-}
-
-sub update_password {
-    my ( $self, $password ) = @_;
-    $self->_fill_password( $password );
-    $self->update;
-    return $self;
-}
-
-sub _fill_password {
-    my ( $self, $password ) = @_;
-
-    my $salt = random_salt();
-
-    $self->password(
-        en_base64(
-            bcrypt_hash({
-                key_nul => 1,
-                cost => 8,
-                salt => $salt,
-            }, $password )
-        )
-    );
-
-    $self->salt( en_base64($salt) );
-}
-
-sub random_salt {
-    Crypt::Random::makerandom_octet( Length => 16 );
-
-
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
-
-__PACKAGE__->set_primary_key('person_id');
-
 use Crypt::Eksblowfish::Bcrypt qw( bcrypt_hash en_base64 de_base64 );
 use Crypt::Random;
 
