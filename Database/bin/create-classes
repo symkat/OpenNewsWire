@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CLASS_NAME=$1
+CLASS_NAME="OpenNewsWire::DB"
 
 # Generate a random 8 character name for the docker container that holds the PSQL
 # database.
