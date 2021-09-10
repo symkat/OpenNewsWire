@@ -1,6 +1,13 @@
 %% cascade '_base.tx'
 
 %% around content -> {
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="[% $c.uri_for_action( '/index' ) %]">Home</a></li>
+        <li class="breadcrumb-item">People</li>
+        <li class="breadcrumb-item active" aria-current="page"><a href="[% $c.uri_for_action( '/userchannel/get_user', [ $user_profile.name ] ) %]">u/[% $user_profile.name %]</a></li>
+      </ol>
+    </nav>
 
     <h2 class="my-4">u/[% $user_profile.name %]</h2>
 

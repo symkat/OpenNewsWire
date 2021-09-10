@@ -4,6 +4,7 @@
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="[% $c.uri_for_action( '/index' ) %]">Home</a></li>
         <li class="breadcrumb-item"><a href="[% $c.uri_for_action( '/topicchannel/index' ) %]">Topics</a></li>
         <li class="breadcrumb-item"><a href="[% $c.uri_for_action( '/topicchannel/get_topic', [], $topic.name ) %]">t/[% $topic.name %]</a></li>
         <li class="breadcrumb-item active" aria-current="page"><a href="[% $c.uri_for_action( '/topicchannel/get_topic', [], $topic.name, $message.id, $message.title ) %]">[% $message.title %]</a></li>

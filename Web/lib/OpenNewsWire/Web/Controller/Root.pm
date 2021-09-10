@@ -24,6 +24,10 @@ sub base :Chained('/') PathPart('') CaptureArgs(0) {
 
 sub index :Chained('base') PathPart('') Args(0) {
     my ( $self, $c ) = @_;
+    $c->stash->{template} = 'index.tx';
+    
+    push @{$c->stash->{messages}},
+        $c->model('DB')->resultset('TopicChannelMessage')->search()->all;
 }
 
 sub get_logout :Chained('base') PathPart('logout') Args(0) Method('GET') {
