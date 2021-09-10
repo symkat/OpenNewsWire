@@ -64,7 +64,7 @@ __PACKAGE__->table("message");
 =head2 content
 
   data_type: 'text'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 url
 
@@ -94,7 +94,7 @@ __PACKAGE__->add_columns(
   "title",
   { data_type => "text", is_nullable => 1 },
   "content",
-  { data_type => "text", is_nullable => 0 },
+  { data_type => "text", is_nullable => 1 },
   "url",
   { data_type => "text", is_nullable => 1 },
   "created_at",
@@ -199,9 +199,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_channel_messages
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-08 14:30:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UqCL3m0DEMgcjDA73SZk2w
+Type: has_many
+
+Related object: L<OpenNewsWire::DB::Result::UserChannelMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_channel_messages",
+  "OpenNewsWire::DB::Result::UserChannelMessage",
+  { "foreign.message_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-10 04:43:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:lKrkAKr/ER66sdet2buqcg
 
 sub time_ago {
     my ( $self ) = @_;

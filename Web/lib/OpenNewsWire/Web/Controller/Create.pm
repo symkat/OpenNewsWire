@@ -58,6 +58,7 @@ sub create_message :Chained('base') PathPart('message') Args(0) Method('POST') {
     my $msg_id    = $c->req->params->{message_id};
     my $msg_slug  = $c->req->params->{message_slug};
     my $chan_name = $c->req->params->{channel_name};
+    my $self_post = 0;
 
     $c->stash(
         form_to      => $target,
@@ -83,9 +84,23 @@ sub create_message :Chained('base') PathPart('message') Args(0) Method('POST') {
                 channel_id => $channel_id,
             });
             # Set the variables so that the user is redirected to the new message post..
-            ( $msg_id, $msg_slug, $chan_name ) = ( $message->id, $title, $name );
+            ( $msg_id, $msg_slug, $chan_name ) = ( $message->id, $message->slug, $name );
+        } elsif ( $mode eq 'u' ) {
+            # Self-Post
+            if ( $name eq $c->stash->{user}->name ) {
+                $c->model('DB')->resultset('UserChannelMessage')->create({
+                    author_id  => $c->stash->{user}->id,
+                    message_id => $message->id,
+                });
+                # Set the variables so that the user is redirected to the new message post..
+                ( $msg_id, $msg_slug, $self_post ) = ( $message->id, $message->slug, 1 );
+            }
         }
     });
+
+    if ( $self_post ) {
+        $c->res->redirect( $c->uri_for_action( '/userchannel/get_user_message', [], $c->stash->{user}->name, $msg_id, $msg_slug ) );
+    }
 
     if ( $msg_id && $msg_slug && $chan_name ) {
         $c->res->redirect( $c->uri_for_action( '/topicchannel/get_topic_message', [], $chan_name, $msg_id, $msg_slug ) );

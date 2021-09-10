@@ -33,7 +33,7 @@ CREATE TABLE message (
     author_id                   int             not null references person(id),
     parent_id                   int             references message(id),
     title                       text            ,
-    content                     text            not null,
+    content                     text            ,
     url                         text            ,
     created_at                  timestamptz     not null default current_timestamp
 );
@@ -70,6 +70,15 @@ create TABLE topic_channel_message (
     id                          serial          PRIMARY KEY,
     author_id                   int             not null references person(id),
     channel_id                  int             not null references topic_channel(id),
+    message_id                  int             not null references message(id),
+    is_archived                 boolean         not null default false,
+    is_stickied                 boolean         not null default false,
+    created_at                  timestamptz     not null default current_timestamp
+);
+
+create TABLE user_channel_message (
+    id                          serial          PRIMARY KEY,
+    author_id                   int             not null references person(id),
     message_id                  int             not null references message(id),
     is_archived                 boolean         not null default false,
     is_stickied                 boolean         not null default false,

@@ -208,9 +208,24 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 user_channel_messages
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-08 14:30:18
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:irY/GBQ/r8VIJXqXiJpL2Q
+Type: has_many
+
+Related object: L<OpenNewsWire::DB::Result::UserChannelMessage>
+
+=cut
+
+__PACKAGE__->has_many(
+  "user_channel_messages",
+  "OpenNewsWire::DB::Result::UserChannelMessage",
+  { "foreign.author_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-10 04:43:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KCmYIsQsxa9tL8u5tCntEQ
 
 sub setting {
     my ( $self, $setting, $value ) = @_;

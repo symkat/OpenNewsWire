@@ -20,10 +20,9 @@
         %% }
             <br />
             <a href="#" class="card-link">Comments ([% $message.message.comment_count %])</a>
-            <a class="card-link" href="[% $c.uri_for_action( '/userchannel/get_user', [], $message.author.name ) %]">u/[% $message.author.name %]</a>
+            <a class="card-link" href="[% $c.uri_for_action( '/userchannel/get_user', [ $message.author.name ] ) %]">u/[% $message.author.name %]</a>
             <small><span title="[% $message.message.created_at.strftime('%Y %T') %]">[% $message.message.time_ago %]</span></small>
         </div>
     </div>
     %% }
-
 %% }

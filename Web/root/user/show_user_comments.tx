@@ -1,0 +1,28 @@
+%% cascade '_base.tx'
+
+%% around content -> {
+
+    <h2 class="my-4">u/[% $user_profile.name %]</h2>
+
+%%  if ( my $profile = $user_profile.setting('bio') ) {
+    <div class="my-4">
+%%      $profile
+    </div>
+%% } 
+
+
+<ul class="nav nav-tabs my-4">
+    <li class="nav-item"><a class="nav-link" href="[% $c.uri_for_action( '/userchannel/get_user', [ $user_profile.name ]) %]">Self Posts</a></li>
+    <li class="nav-item"><a class="nav-link" href="[% $c.uri_for_action( '/userchannel/get_user_submissions', [ $user_profile.name ] ) %]">Submissions</a></li>
+    <li class="nav-item"><a class="nav-link active" aria-current="page" href="[% $c.uri_for_action( '/userchannel/get_user_comments', [ $user_profile.name ] ) %]">Comments</a></li>
+</ul>
+
+    %% for $messages -> $message {
+    <div class="card my-4">
+        <div class="card-body">
+            <p>[% $message.content %]</p>
+            <p><small><span title="[% $message.message.created_at.strftime('%Y %T') %]">&nbsp; ~ &nbsp; [% $message.time_ago %]</span></small></p>
+        </div>
+    </div>
+    %% }
+%% }

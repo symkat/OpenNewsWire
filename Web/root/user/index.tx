@@ -1,0 +1,19 @@
+%% cascade '_base.tx'
+
+%% around content -> {
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active aria-current="page""><a href="[% $c.uri_for_action( '/topicchannel/index' ) %]">Topics</a></li>
+      </ol>
+    </nav>
+    %% for $topics -> $topic {
+    <div class="card my-4">
+        <div class="card-body">
+            <h5 class="card-title"><a href="[% $c.uri_for_action( '/topicchannel/get_topic', [], $topic.name ) %]">t/[% $topic.name %]</a></h5>
+            <small class="text-mute">[% $message.message.url %]</small>
+        </div>
+    </div>
+    %% }
+
+%% }
+
