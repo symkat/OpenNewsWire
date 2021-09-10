@@ -15,16 +15,16 @@
             <h5 class="card-title" style="display: inline"><a href="[% $message.url %]">[% $message.title %]</a></h5>
             <small class="text-mute">[% $message.url %]</small>
         %% } else {
-            <h5 class="card-title" style="display: inline"><a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [ ], $channel.name, $message.id, $message.title ) %]">[% $message.title %]</a></h5>
+            <h5 class="card-title" style="display: inline"><a href="[% $c.uri_for_action( '/userchannel/get_user_message', [ $user_profile.name ], $message.id, $message.title ) %]">[% $message.title %]</a></h5>
             <small class="text-mute">(text post)</small>
         %% }
             <div class="pt-4">
                 %% $message.content
             </div>
             <br />
-            <a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [], $channel.name, $message.id, $message.title ) %]" class="card-link">[Comments <small>([% $comment_count %])</small>]</a>
+            <a href="[% $c.uri_for_action( '/userchannel/get_user_message', [ $user_profile.name ], $message.id, $message.title ) %]" class="card-link">[Comments <small>([% $comment_count %])</small>]</a>
 %%          if ( $message.parent_id ) { 
-            <a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [], $channel.name, $message.parent_id, 'parent' ) %]" class="card-link">[Parent]</a>
+            <a href="[% $c.uri_for_action( '/userchannel/get_user_message', [ $user_profile.name ], $message.parent_id, 'parent' ) %]" class="card-link">[Parent]</a>
 %%          }
         </div>
     </div>
@@ -35,7 +35,7 @@
         <input type="hidden" name="reply_to"     value="[% $message.id %]" />
         <input type="hidden" name="message_id"   value="[% $message.id %]" />
         <input type="hidden" name="message_slug" value="[% $message.title %]" />
-        <input type="hidden" name="channel_name" value="[% $channel.name %]" />
+        <input type="hidden" name="user_name"    value="[% $user_profile.name %]" />
         <div class="mb-3">
             <label for="message" class="form-label">Post a response</label>
             <textarea class="form-control" name="message" id="message" rows="3"></textarea>
@@ -46,7 +46,7 @@
     </div>
 
     %% for $comments -> $comment {  
-    %%     include "/topic/_show_topic_message_comment.tx" { comment => $comment };
+    %%     include "/user/_show_topic_message_comment.tx" { comment => $comment };
     %% }
     
 %% }

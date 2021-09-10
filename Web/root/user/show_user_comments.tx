@@ -21,7 +21,7 @@
     <div class="card my-4">
         <div class="card-body">
             <p>[% $message.content %]</p>
-            <p><small><span title="[% $message.message.created_at.strftime('%Y %T') %]">&nbsp; ~ &nbsp; [% $message.time_ago %]</span></small></p>
+            <p><small><span title="[% $message.created_at.strftime('%Y %T') %]">&nbsp; ~ &nbsp; [% $message.time_ago %]</span></small></p>
         </div>
     </div>
     %% }

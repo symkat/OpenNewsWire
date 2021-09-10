@@ -42,7 +42,7 @@ sub get_user_comments :Chained('base') PathPart('comments) Args(0) Method('GET')
     push @{$c->stash->{messages}},
         $c->model('DB')->resultset('Message')->search({
             author_id => $c->stash->{user_profile}->id,
-            parent_id => { '!=' => [ 0, undef ] },
+            parent_id => { '!=' => undef },
         })->all;
 }
 

@@ -9,6 +9,13 @@
               Create New Topic
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link [% $sb_active == "dashboard" ? "active" : "" %]"  aria-current="page" 
+                href="[% $c.uri_for_action( '/create/create_message', [],  { selfpost => 1 } ) %]">
+              <span data-feather="home"></span>
+              Create Self-Post
+            </a>
+          </li>
 %%        if ( $topic ) { 
           <li class="nav-item">
             <a class="nav-link [% $sb_active == "dashboard" ? "active" : "" %]"  aria-current="page" 

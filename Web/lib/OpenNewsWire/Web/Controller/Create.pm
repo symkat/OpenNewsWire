@@ -41,7 +41,10 @@ sub show_create_message :Chained('base') PathPart('message') Args(0) Method('GET
 
     if ( $c->req->params->{topic} ) {
         $c->stash->{form_to} = 't/' . $c->req->params->{topic};
+    } elsif ( $c->req->params->{selfpost} ) {
+        $c->stash->{form_to} = 'u/' . $c->stash->{user}->name;
     }
+
     $c->stash->{template} = 'create/message.tx';
 }
 
@@ -58,7 +61,7 @@ sub create_message :Chained('base') PathPart('message') Args(0) Method('POST') {
     my $msg_id    = $c->req->params->{message_id};
     my $msg_slug  = $c->req->params->{message_slug};
     my $chan_name = $c->req->params->{channel_name};
-    my $self_post = 0;
+    my $user_name = $c->req->params->{user_name};
 
     $c->stash(
         form_to      => $target,
@@ -93,13 +96,13 @@ sub create_message :Chained('base') PathPart('message') Args(0) Method('POST') {
                     message_id => $message->id,
                 });
                 # Set the variables so that the user is redirected to the new message post..
-                ( $msg_id, $msg_slug, $self_post ) = ( $message->id, $message->slug, 1 );
+                ( $msg_id, $msg_slug, $user_name ) = ( $message->id, $message->slug, $c->stash->{user}->name );
             }
         }
     });
 
-    if ( $self_post ) {
-        $c->res->redirect( $c->uri_for_action( '/userchannel/get_user_message', [], $c->stash->{user}->name, $msg_id, $msg_slug ) );
+    if ( $user_name ) {
+        $c->res->redirect( $c->uri_for_action( '/userchannel/get_user_message', [ $user_name ], $msg_id, $msg_slug ) );
     }
 
     if ( $msg_id && $msg_slug && $chan_name ) {

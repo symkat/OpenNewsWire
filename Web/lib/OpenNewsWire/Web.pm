@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use Catalyst::Runtime 5.80;
 use Catalyst qw| -Debug Static::Simple Session Session::Store::Cookie Session::State::Cookie|;
+use URI;
 extends 'Catalyst';
 
 our $VERSION = '0.01';
@@ -33,6 +34,9 @@ __PACKAGE__->config(
         path   => [qw( root )],
         suffix => 'tx',
         syntax => 'Metakolon',
+        function => {
+            domain => sub { return URI->new(shift)->host },
+        },
     },
 );
 
