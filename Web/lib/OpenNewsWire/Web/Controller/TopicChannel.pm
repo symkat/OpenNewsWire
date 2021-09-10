@@ -8,10 +8,10 @@ sub base :Chained('/base') PathPart('t') CaptureArgs(0) {
     my ( $self, $c ) = @_;
     
     # Is there a valid user logged in?  - If not, send them to the login page.
-    if ( ! $c->stash->{user} ) {
-        $c->res->redirect( $c->uri_for_action('/get_login') );
-        $c->detach;
-    }
+#    if ( ! $c->stash->{user} ) {
+#        $c->res->redirect( $c->uri_for_action('/get_login') );
+#        $c->detach;
+#    }
 }
 
 sub index :Chained('base') PathPart('') Args(0) Method('GET') {

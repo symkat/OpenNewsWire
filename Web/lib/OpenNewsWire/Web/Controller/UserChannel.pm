@@ -8,10 +8,10 @@ sub base :Chained('/base') PathPart('u') CaptureArgs(1) {
     my ( $self, $c, $profile_name ) = @_;
     
     # Is there a valid user logged in?  - If not, send them to the login page.
-    if ( ! $c->stash->{user} ) {
-        $c->res->redirect( $c->uri_for_action('/get_login') );
-        $c->detach;
-    }
+#    if ( ! $c->stash->{user} ) {
+#        $c->res->redirect( $c->uri_for_action('/get_login') );
+#        $c->detach;
+#    }
     
     my $user = $c->model('DB')->resultset('Person')->search({ name => $profile_name })->first;
 
