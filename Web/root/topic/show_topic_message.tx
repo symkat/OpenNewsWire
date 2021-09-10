@@ -15,11 +15,25 @@
     <div class="card my-4">
         <div class="card-body">
         %% if ( $message.url ) { 
-            <h5 class="card-title" style="display: inline"><a href="[% $message.url %]">[% $message.title %]</a></h5>
-            <small class="text-mute">[% $message.url %]</small>
+            <h5 class="card-title">
+                %% # <span style="font-size: 0.8em"><a href="[% $c.uri_for_action( '/topicchannel/get_topic', $message.channel.name ) %]">t/[% $message.channel.name %]</a>: </span>
+                <a href="[% $message.url %]">[% $message.title %]</a>
+                <span class="text-mute" style="font-size: 0.6em">
+                    ([% $message.url | domain %])
+                    <a href="[% $c.uri_for_action( '/userchannel/get_user', [ $message.author.name ] ) %]">u/[% $message.author.name %]</a>
+                    <span title="[% $message.created_at.strftime('%Y %T') %]">[% $message.time_ago %]</span>
+                </span>
+            </h5>
         %% } else {
-            <h5 class="card-title" style="display: inline"><a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [ ], $channel.name, $message.id, $message.title ) %]">[% $message.title %]</a></h5>
-            <small class="text-mute">(text post)</small>
+            <h5 class="card-title">
+                %% # <span style="font-size: 0.8em"><a href="[% $c.uri_for_action( '/topicchannel/get_topic', $message.channel.name ) %]">t/[% $message.channel.name %]</a>: </span>
+                <a href="[% $c.uri_for_action( '/topicchannel/get_topic_message', [ ], $channel.name, $message.id, $message.title ) %]">[% $message.title %]</a>
+                <span class="text-mute" style="font-size: 0.6em">
+                    (text post)
+                    <a href="[% $c.uri_for_action( '/userchannel/get_user', [ $message.author.name ] ) %]">u/[% $message.author.name %]</a>
+                    <span title="[% $message.created_at.strftime('%Y %T') %]">[% $message.time_ago %]</span>
+                </span>
+            </h5>
         %% }
             <div class="pt-4">
                 %% $message.content
