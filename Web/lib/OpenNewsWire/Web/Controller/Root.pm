@@ -53,7 +53,7 @@ sub post_login :Chained('base') PathPart('login') Args(0) Method('POST') {
     my $password = $c->req->body_data->{password};
 
     # Try to load the user account, otherwise add an error.
-    my $person = $c->model('DB')->resultset('Person')->find( { email => $email } )
+    my $person = $c->model('DB')->resultset('Person')->find( CORE::index($email, '@') != -1 ? { email => $email }  : { name => $email } )
         or push @{$c->stash->{errors}}, "Invalid email address or password.";
 
     # Do not continue if there are errors.
@@ -123,7 +123,7 @@ sub post_register :Chained('base') PathPart('register') Args(0) Method('POST') {
     $c->session->{uid} = $person->id;
 
     # Send the user to the dashboard once they have made an account.
-    $c->res->redirect( $c->uri_for_action( '/dashboard/get_dashboard' ) );
+    $c->res->redirect( $c->uri_for_action( '/index' ) );
 }
 
 sub end :ActionClass('RenderView') { }

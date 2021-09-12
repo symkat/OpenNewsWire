@@ -2,8 +2,8 @@ CREATE EXTENSION IF NOT EXISTS citext;
 
 CREATE TABLE person (
     id                          serial          PRIMARY KEY,
-    name                        text            not null,
-    email                       citext          not null unique,
+    name                        citext          not null unique,
+    email                       citext          unique,
     is_enabled                  boolean         not null default true,
     created_at                  timestamptz     not null default current_timestamp
 );

@@ -17,9 +17,9 @@
         </div>
         <div class="col">
             <form method="POST" action="/login">
-                %% include '_forms/input.tx' { type => 'email', name => 'email',
-                %%   title => 'Email address',
-                %%   help  => 'The email account you registered with.',
+                %% include '_forms/input.tx' { type => 'text', name => 'email',
+                %%   title => 'Username or Email address',
+                %%   help  => 'The username or email account you registered with.',
                 %%   value => $form_email
                 %% };
 

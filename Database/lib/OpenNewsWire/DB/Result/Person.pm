@@ -46,13 +46,13 @@ __PACKAGE__->table("person");
 
 =head2 name
 
-  data_type: 'text'
+  data_type: 'citext'
   is_nullable: 0
 
 =head2 email
 
   data_type: 'citext'
-  is_nullable: 0
+  is_nullable: 1
 
 =head2 is_enabled
 
@@ -77,9 +77,9 @@ __PACKAGE__->add_columns(
     sequence          => "person_id_seq",
   },
   "name",
-  { data_type => "text", is_nullable => 0 },
-  "email",
   { data_type => "citext", is_nullable => 0 },
+  "email",
+  { data_type => "citext", is_nullable => 1 },
   "is_enabled",
   { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "created_at",
@@ -115,6 +115,18 @@ __PACKAGE__->set_primary_key("id");
 =cut
 
 __PACKAGE__->add_unique_constraint("person_email_key", ["email"]);
+
+=head2 C<person_name_key>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("person_name_key", ["name"]);
 
 =head1 RELATIONS
 
@@ -224,8 +236,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-10 04:43:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KCmYIsQsxa9tL8u5tCntEQ
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2021-09-12 03:12:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wqVm/N1DVw2/xcZDb7AAKA
 
 sub setting {
     my ( $self, $setting, $value ) = @_;
