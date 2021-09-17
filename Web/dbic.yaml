@@ -1,4 +1,4 @@
-HNW_DB:
+ONW_DB:
     dsn: dbi:Pg:host=localhost;dbname=housenewswire
     user: housenewswire
     password: housenewswire
