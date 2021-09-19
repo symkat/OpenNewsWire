@@ -34,7 +34,7 @@ sub _build__dh {
     DBIx::Class::DeploymentHandler->new({
         schema           => OpenNewsWire::DB->connect($self->connection_name),
         force_overwrite  => $self->force,
-        script_directory => 'share/ddl',
+        script_directory => 'etc/ddl',
         databases        => [ 'PostgreSQL' ],
     });
 }
