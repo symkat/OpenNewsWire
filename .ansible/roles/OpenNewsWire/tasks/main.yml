@@ -1,0 +1,288 @@
+---
+- name: Create secret for cookie encryption.
+  set_fact:
+    meshmage_secret: "{{ lookup('password', '/dev/null chars=hexdigits length=40') }}"
+  when: meshmage_secret is undefined
+
+- name: Create postgres password.
+  set_fact:
+    postgresql_password: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=32') }}"
+  when: postgresql_password is undefined
+
+- name: Update all packages to their latest version
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+
+- name: Install packages for key exchange.
+  apt:
+    name: [
+      'apt-transport-https',
+      'ca-certificates',
+      'curl',
+      'gnupg',
+      'lsb-release'
+    ]
+    state: present
+
+- name: Install packages
+  apt:
+    name: [
+      'git',
+      'build-essential',
+      'libpq-dev',
+      'libssl-dev',
+      'libz-dev',
+      'cpanminus',
+      'liblocal-lib-perl',
+      'kitty-terminfo',
+    ]
+    state: present
+
+- name: Create onw user
+  user:
+    name: onw
+    shell: /bin/bash
+    comment: OpenNewsWire User Account
+
+- name: Create ~onw/.ssh
+  file:
+    state: directory
+    path: /home/onw/.ssh
+    owner: onw
+    group: onw
+    mode: 0700
+
+- name: Create ~onw/.ssh/authorized_keys from ~root
+  copy:
+    dest: /home/onw/.ssh/authorized_keys
+    src: /root/.ssh/authorized_keys
+    remote_src: true
+    owner: onw
+    group: onw
+    mode: 0600
+
+- name: Setup local::lib for meshmage.
+  lineinfile:
+    path: /home/onw/.bashrc
+    line: 'eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"'
+    create: yes
+
+- name: Install perl modules (up to 3 tries)
+  shell: cpanm App::plx App::opan App::Dex Carton Dist::Zilla
+  args:
+    chdir: /home/onw
+    executable: /bin/bash
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  retries: 3
+  register: result
+  until: result.rc == 0
+  become: true
+  become_user: onw
+
+- name: Checkout OpenNewsWire repo.
+  shell: git clone https://github.com/symkat/OpenNewsWire.git
+  args:
+    creates: /home/onw/OpenNewsWire
+    chdir: /home/onw
+    executable: /bin/bash
+  environment:
+    GIT_SSH_COMMAND: "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+  become: true
+  become_user: onw
+
+- name: Build OpenNewsWire::DB
+  shell: dzil build
+  args:
+    chdir: /home/onw/OpenNewsWire/Database
+    executable: /bin/bash
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  become: true
+  become_user: onw
+
+- name: Install OpenNewsWire::DB
+  shell: cpanm OpenNewsWire-DB-*.tar.gz
+  args:
+    chdir: /home/onw/OpenNewsWire/Database
+    executable: /bin/bash
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  retries: 3
+  register: result
+  until: result.rc == 0
+  become: true
+  become_user: onw
+
+- name: Configure plx for OpenNewsWire::Web
+  shell: |
+    plx --init
+    plx --config libspec add 00tilde.ll $HOME/perl5
+    plx --config libspec add 40dblib.dir ../Database/lib
+    plx opan init
+    plx opan add ../DB/OpenNewsWire-DB-*.tar.gz
+    plx opan merge
+  args:
+    creates: /home/onw/OpenNewsWire/Web/.plx
+    chdir: /home/onw/OpenNewsWire/Web
+    executable: /bin/bash
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  become: true
+  become_user: onw
+
+- name: Install dependancies for OpenNewsWire::Web
+  shell: plx opan carton install
+  args:
+    chdir: /home/onw/OpenNewsWire/Web
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  retries: 3
+  register: result
+  until: result.rc == 0
+  become: true
+  become_user: onw
+
+# Setup the databases
+
+- name: Install Database Packages
+  apt:
+    name: [
+      'postgresql-client',
+      'postgresql-contrib',
+      'postgresql',
+      'python3-psycopg2',
+    ]
+    state: present
+
+- name: start postgresql
+  service: name=postgresql state=started enabled=true
+
+- name: Create PSQL user account.
+  postgresql_user:
+    name: "{{ postgresql_user }}"
+    password: "{{ postgresql_password }}"
+    state: present
+  become_user: postgres
+  become: true
+
+- name: Create PSQL database.
+  postgresql_db:
+    name: "{{ postgresql_database }}"
+    owner: "{{ postgresql_user }}"
+    state: present
+  become_user: postgres
+  become: true
+  register: postgresql_create_database
+
+- name: Enable citext on database.
+  postgresql_query:
+    db:    "{{ postgresql_database }}"
+    query: CREATE EXTENSION IF NOT EXISTS citext
+  become_user: postgres
+  become: true
+
+- name: Write /etc/dbic.yaml file.
+  template:
+    src: "{{ role_path }}/templates/dbic.yaml.j2"
+    dest: /etc/dbic.yaml
+    owner: onw
+    group: onw
+    mode: '0640'
+
+- name: Overwrite /home/onw/OpenNewsWire/Web/dbic.yaml file.
+  template:
+    src: "{{ role_path }}/templates/dbic.yaml.j2"
+    dest: /home/onw/OpenNewsWire/Web/dbic.yaml
+    owner: onw
+    group: onw
+    mode: '0640'
+
+- name: Check if ddl directory exists.
+  stat:
+    path: /home/onw/OpenNewsWire/Database/etc/ddl/PostgreSQL/deploy
+  register: ddl_dir
+
+- name: Write Database DDL
+  shell: ./bin/opennewswire-db-deploy write_ddl
+  args:
+    chdir: /home/onw/OpenNewsWire/Database
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  become: true
+  become_user: onw
+  when: ddl_dir.exists is not defined
+
+- name: Install Database DDL
+  shell: ./bin/opennewswire-db-deploy install
+  args:
+    chdir: /home/onw/OpenNewsWire/Database
+  environment:
+    PERL_MB_OPT: "--install_base \"/home/onw/perl5\""
+    PERL_MM_OPT: "INSTALL_BASE=/home/onw/perl5"
+    PERL5LIB: "/home/onw/perl5/lib/perl5"
+    PATH: "/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+  become: true
+  become_user: onw
+  when: ddl_dir.exists is not defined
+
+- name: Install opennewswire.service file.
+  copy:
+    dest: /etc/systemd/system/opennewswire.service
+    src: "{{ role_path }}/files/opennewswire.service"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start OpenNewsWire
+  service:
+    name: opennewswire
+    state: started
+    enabled: true
+
+
+# Setup the web server
+
+- name: Install Web Server Packages
+  apt:
+    name: [
+      'nginx',
+      'certbot',
+      'python3-certbot-dns-linode',
+      'python-certbot-dns-linode-doc',
+    ]
+    state: present
+
+- name: "Write /etc/nginx/sites-enabled/{{ nginx_domain }}"
+  template:
+    src: "{{ role_path }}/templates/nginx-site.conf.j2"
+    dest: "/etc/nginx/sites-enabled/{{ nginx_domain }}"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true

@@ -1,0 +1,17 @@
+server {
+    listen 80;
+    server_name {{ nginx_domain }};
+
+    location / {
+        proxy_pass        http://localhost:8080;
+        proxy_set_header  Host $host;
+        proxy_set_header  X-Real-IP  $remote_addr;
+        try_files $uri $uri/ =404;
+    }
+}
+
+server {
+    listen 80;
+    server_name www.{{ nginx_domain }};
+    return 301 $scheme://{{ nginx_domain }}$request_uri;
+}

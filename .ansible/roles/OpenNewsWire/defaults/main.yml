@@ -1,0 +1,5 @@
+postgresql_user: meshmage
+postgresql_password: meshmage
+postgresql_host: localhost
+postgresql_database: opennewswire
+nginx_domain: opennewswire.com

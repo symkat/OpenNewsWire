@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenNewsWire Web Service
+After=network.target
+
+[Service]
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+ExecStart=/home/onw/perl5/bin/plx starman -l 127.0.0.1:8080 app.psgi
+Restart=on-failure
+User=onw
+Group=onw
+WorkingDirectory=/home/onw/OpenNewsWire/Web
+Environment="PERL_MB_OPT=--install_base \"/home/onw/perl5\""
+Environment="PERL_MM_OPT=INSTALL_BASE=/home/onw/perl5"
+Environment="PERL5LIB=/home/onw/perl5/lib/perl5"
+Environment="PATH=/home/onw/perl5/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games"
+
+[Install]
+WantedBy=multi-user.target
